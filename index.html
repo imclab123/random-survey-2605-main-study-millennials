@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Please wait... | Survey Redirect</title>
+    <style>
+        /* 基礎樣式設定：模仿 SurveyMonkey 的簡約現代感 */
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f7f9fa;
+            /* 輕微的偏灰白底色 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333e48;
+        }
+
+        /* 內容卡片容器 */
+        .container {
+            position: relative;
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            padding: 50px 30px;
+            border-radius: 4px;
+            /* SurveyMonkey 使用較小的圓角 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            /* 頂部綠色裝飾條 - SurveyMonkey 經典色 */
+            border-top: 6px solid #00bf6f;
+        }
+
+        /* SurveyMonkey 綠色的旋轉載入器 */
+        .spinner {
+            border: 3px solid #e1e4e7;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #00bf6f;
+            /* SurveyMonkey 亮綠色 */
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 標題與內文樣式 */
+        h2 {
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0 0 15px 0;
+            color: #333e48;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #6b787f;
+            margin: 0;
+        }
+
+        /* 當全部額滿時的特殊強調圖示 */
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: none;
+            /* 初始隱藏 */
+        }
+
+        /* 按鈕樣式 (僅用於錯誤重試時，如有需要可開啟) */
+        .retry-btn {
+            display: none;
+            margin-top: 25px;
+            padding: 12px 25px;
+            background-color: #00bf6f;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .retry-btn:hover {
+            background-color: #009e5a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="loading-view">
+            <div class="spinner"></div>
+            <h2>Loading survey...</h2>
+            <p>Please wait a moment while we assign you to an experimental group.</p>
+        </div>
+
+        <div id="icon-view" class="status-icon"></div>
+        <div id="message-view" style="display:none;">
+            <h2 id="status-title"></h2>
+            <p id="status-text"></p>
+            <a href="javascript:location.reload();" class="retry-btn" id="retry-link">Try Again</a>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ 貼上你的 Google Apps Script URL
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyOz3Nr48hIVOuBfhlcC7uQvYwnOt0DcCM9UCocVBWByOjaNnAmJEdMFctSjWGAjHemIw/exec";
+
+        window.onload = function () {
+            const loadingView = document.getElementById('loading-view');
+            const messageView = document.getElementById('message-view');
+            const statusTitle = document.getElementById('status-title');
+            const statusText = document.getElementById('status-text');
+            const iconView = document.getElementById('icon-view');
+            const retryLink = document.getElementById('retry-link');
+
+            fetch(GAS_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success" && data.targetUrl) {
+                        // 轉址成功前微調文字
+                        statusText.innerText = "Redirecting you now...";
+                        window.location.href = data.targetUrl;
+                    } else if (data.status === "full") {
+                        // 顯示額滿訊息
+                        loadingView.style.display = 'none';
+                        messageView.style.display = 'block';
+                        iconView.style.display = 'block';
+                        iconView.innerText = "🔒"; // 顯示鎖定圖示代表額滿
+                        statusTitle.innerText = "Participation Limit Reached";
+                        statusText.innerText = "Thank you for your interest! Unfortunately, all experimental groups have reached their maximum capacity, and we are no longer accepting new responses.";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    // 顯示連線錯誤訊息
+                    loadingView.style.display = 'none';
+                    messageView.style.display = 'block';
+                    iconView.style.display = 'block';
+                    iconView.innerText = "⚠️";
+                    statusTitle.innerText = "Connection Error";
+                    statusText.innerText = "We are having trouble connecting to the survey server. Please check your internet connection and try again.";
+                    retryLink.style.display = 'inline-block';
+                });
+        };
+    </script>
+
+</body>
+
+</html>
