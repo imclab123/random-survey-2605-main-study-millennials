@@ -104,7 +104,7 @@
         <div id="loading-view">
             <div class="spinner"></div>
             <h2>Loading survey...</h2>
-            <p>Please wait a moment while we assign you to an experimental group.</p>
+            <p>Please wait a moment while the survey initializes. You will be redirected shortly.</p>
         </div>
 
         <div id="icon-view" class="status-icon"></div>
@@ -141,7 +141,7 @@
                         iconView.style.display = 'block';
                         iconView.innerText = "🔒"; // 顯示鎖定圖示代表額滿
                         statusTitle.innerText = "Participation Limit Reached";
-                        statusText.innerText = "Thank you for your interest! Unfortunately, all experimental groups have reached their maximum capacity, and we are no longer accepting new responses.";
+                        statusText.innerText = "Thank you for your interest! Unfortunately, all studies have reached their maximum capacity, and we are no longer accepting new responses.";
                     }
                 })
                 .catch(error => {
