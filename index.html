@@ -5,95 +5,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Please wait... | Survey Redirect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Crimson+Pro:wght@500;600&display=swap" rel="stylesheet">
     <style>
-        /* 基礎樣式設定：模仿 SurveyMonkey 的簡約現代感 */
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background-color: #f7f9fa;
-            /* 輕微的偏灰白底色 */
+            font-family: 'Atkinson Hyperlegible', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(150deg, #eef7f2 0%, #e8f3fb 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            color: #333e48;
+            padding: 24px;
+            color: #1a2e22;
         }
 
-        /* 內容卡片容器 */
+        /* ---- Card ---- */
         .container {
-            position: relative;
             background: #ffffff;
             width: 100%;
-            max-width: 480px;
-            padding: 50px 30px;
-            border-radius: 4px;
-            /* SurveyMonkey 使用較小的圓角 */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 460px;
+            padding: 52px 44px 48px;
+            border-radius: 20px;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.06),
+                0 8px 32px rgba(0, 0, 0, 0.08);
             text-align: center;
-            /* 頂部綠色裝飾條 - SurveyMonkey 經典色 */
-            border-top: 6px solid #00bf6f;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* SurveyMonkey 綠色的旋轉載入器 */
+        /* Gradient accent bar */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00bf6f 0%, #00a8e8 100%);
+        }
+
+        /* ---- Spinner ---- */
         .spinner {
-            border: 3px solid #e1e4e7;
-            width: 40px;
-            height: 40px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            border-left-color: #00bf6f;
-            /* SurveyMonkey 亮綠色 */
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 25px;
+            border: 3.5px solid #dde8e2;
+            border-top-color: #00bf6f;
+            animation: spin 0.85s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            margin: 0 auto 28px;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
-        /* 標題與內文樣式 */
+        @media (prefers-reduced-motion: reduce) {
+            .spinner { animation-duration: 2.5s; }
+        }
+
+        /* ---- Status icon badge ---- */
+        .status-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-icon.icon-full {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .status-icon.icon-error {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        /* ---- Typography ---- */
+        .survey-label {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #00a868;
+            background: #f0fdf4;
+            border-radius: 20px;
+            padding: 4px 14px;
+            margin-bottom: 18px;
+        }
+
         h2 {
-            font-size: 24px;
-            font-weight: 500;
-            margin: 0 0 15px 0;
-            color: #333e48;
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 27px;
+            font-weight: 600;
+            margin: 0 0 14px;
+            color: #0f1d18;
+            line-height: 1.3;
         }
 
         p {
             font-size: 16px;
-            line-height: 1.6;
-            color: #6b787f;
+            line-height: 1.7;
+            color: #56726a;
             margin: 0;
         }
 
-        /* 當全部額滿時的特殊強調圖示 */
-        .status-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-            display: none;
-            /* 初始隱藏 */
-        }
-
-        /* 按鈕樣式 (僅用於錯誤重試時，如有需要可開啟) */
+        /* ---- Retry button ---- */
         .retry-btn {
             display: none;
-            margin-top: 25px;
-            padding: 12px 25px;
-            background-color: #00bf6f;
-            color: white;
+            margin-top: 28px;
+            padding: 13px 30px;
+            background: #00bf6f;
+            color: #ffffff;
             text-decoration: none;
-            border-radius: 3px;
-            font-weight: bold;
-            font-size: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.015em;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+            box-shadow: 0 2px 10px rgba(0, 191, 111, 0.28);
         }
 
         .retry-btn:hover {
-            background-color: #009e5a;
+            background: #009e5a;
+            box-shadow: 0 4px 16px rgba(0, 191, 111, 0.38);
+        }
+
+        .retry-btn:active {
+            transform: translateY(1px);
+        }
+
+        .retry-btn:focus-visible {
+            outline: 3px solid #00bf6f;
+            outline-offset: 3px;
         }
     </style>
 </head>
@@ -102,12 +154,13 @@
 
     <div class="container">
         <div id="loading-view">
-            <div class="spinner"></div>
-            <h2>Loading survey...</h2>
+            <div class="spinner" role="status" aria-label="Loading"></div>
+            <span class="survey-label">Survey System</span>
+            <h2>Loading your survey…</h2>
             <p>Please wait a moment while the survey initializes. You will be redirected shortly.</p>
         </div>
 
-        <div id="icon-view" class="status-icon"></div>
+        <div id="icon-view" class="status-icon" aria-hidden="true"></div>
         <div id="message-view" style="display:none;">
             <h2 id="status-title"></h2>
             <p id="status-text"></p>
@@ -118,6 +171,9 @@
     <script>
         // ⚠️ 貼上你的 Google Apps Script URL
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyOz3Nr48hIVOuBfhlcC7uQvYwnOt0DcCM9UCocVBWByOjaNnAmJEdMFctSjWGAjHemIw/exec";
+
+        const ICON_LOCK = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+        const ICON_WARN = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
 
         window.onload = function () {
             const loadingView = document.getElementById('loading-view');
@@ -138,8 +194,9 @@
                         // 顯示額滿訊息
                         loadingView.style.display = 'none';
                         messageView.style.display = 'block';
-                        iconView.style.display = 'block';
-                        iconView.innerText = "🔒"; // 顯示鎖定圖示代表額滿
+                        iconView.style.display = 'flex';
+                        iconView.classList.add('icon-full');
+                        iconView.innerHTML = ICON_LOCK;
                         statusTitle.innerText = "Participation Limit Reached";
                         statusText.innerText = "Thank you for your interest! Unfortunately, all studies have reached their maximum capacity, and we are no longer accepting new responses.";
                     }
@@ -149,8 +206,9 @@
                     // 顯示連線錯誤訊息
                     loadingView.style.display = 'none';
                     messageView.style.display = 'block';
-                    iconView.style.display = 'block';
-                    iconView.innerText = "⚠️";
+                    iconView.style.display = 'flex';
+                    iconView.classList.add('icon-error');
+                    iconView.innerHTML = ICON_WARN;
                     statusTitle.innerText = "Connection Error";
                     statusText.innerText = "We are having trouble connecting to the survey server. Please check your internet connection and try again.";
                     retryLink.style.display = 'inline-block';
